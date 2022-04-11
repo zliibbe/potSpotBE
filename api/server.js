@@ -33,9 +33,9 @@ app.get('/api/v1/pictures', async (request, response) => {
 
 app.post('/api/v1/potholes', async (request, response) => {
   const pothole = request.body;
-if(!pothole) {
-  return response.status(400).send({ error: `Where's the body?`, request: `${request}`})
-}
+    if(!pothole) {
+        return response.status(400).send({ error: `Where's the body?`, request: `${request}`})
+    }
 
   for (let requiredParameter of ['latitude', 'longitude', 'description', 'pictures']) {
     if (!pothole[requiredParameter]) {
@@ -45,9 +45,36 @@ if(!pothole) {
     }
   }
 
+//   const {latitude, longitude, description} = pothole;
+
+  const createPothole = async (knex, pothole) => {
+
+    const potholeId = await knex('potholes').insert({
+      latitude: pothole.latitude,
+      longitude: pothole.longitude,
+      description: pothole.description
+    }, 'id');
+  
+    let picturePromises = pothole.pictures.map(picture => {
+      return createPicture(knex, {
+        url: picture,
+        pothole_id: potholeId[0].id
+      })
+    });
+  
+    return Promise.all(picturePromises);
+  };
+  
+  const createPicture = (knex, picture) => {
+    return knex('pictures').insert(picture);
+  };
+
   try {
-    const id = await database('potholes').insert(pothole, 'id');
-    response.status(201).json({ id })
+    const id = await database('potholes').insert({latitude, longitude, description}, 'id');
+    // await database('pictures').insert({url: pothole.pictures[0], pothole_id: id[0].id})
+    // createPothole(knex, pothole)
+    const pics = await database('pictures').insert({latitude, longitude, description}, 'pictures');
+    response.status(201).json({ id, pics })
   } catch (error) {
     response.status(500).json({ error });
   }
