@@ -6,8 +6,8 @@ exports.up = function(knex) {
   return knex.schema
     .createTable('potholes', function (table) {
       table.increments('id').primary();
-      table.string('longitude');
       table.string('latitude');
+      table.string('longitude');
       table.string('description');
 
       table.timestamps(true, true);
