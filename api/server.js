@@ -33,7 +33,7 @@ app.get('/api/v1/pictures', async (request, response) => {
 
 app.post('/api/v1/potholes', async (request, response) => {
 
-  let id;
+//   let id;
 
   const pothole = request.body;
 
@@ -51,44 +51,56 @@ app.post('/api/v1/potholes', async (request, response) => {
 
   const {latitude, longitude, description} = pothole;
 
-  const createPothole = async (ph) => {
+  
 
-    const potholeId = await database('potholes').insert({
-      latitude: ph.latitude,
-      longitude: ph.longitude,
-      description: ph.description
-    }, 'id');
+ 
 
-    const pics = Object.values(ph.pictures)
-    id = potholeId;
-    console.log(typeof pics);
-    // const pics = JSON.parse(`${ph.pictures}`)
-    // console.log(pics)
+//   const returnId = (pothole) => {
+//       let testId;
+//       createPothole(pothole)
+//       return testId
+//   }
 
-
-    let picturePromises = pics.map(picture => {
-      console.log(picture);
-      return createPicture({
-        url: picture,
-        pothole_id: potholeId[0].id
-      })
-    });
-
-    return Promise.all(picturePromises);
-  };
-
-  const createPicture = (picture) => {
-    return database('pictures').insert(picture);
-  };
-
-  try {
+try {
+      let testId;
+      const createPothole = async (ph) => {
+      
+        const potholeId = await database('potholes').insert({
+          latitude: ph.latitude,
+          longitude: ph.longitude,
+          description: ph.description
+        }, 'id');
+      
+        const pics = Object.values(ph.pictures)
+        console.log("testId before", testId)
+        
+        // const pics = JSON.parse(`${ph.pictures}`)
+        // console.log(pics)
+      
+      
+        let picturePromises = pics.map(picture => {
+          return createPicture({
+            url: picture,
+            pothole_id: potholeId[0].id
+          })
+        });
+        testId = potholeId[0].id
+        console.log("testId after", testId)
+        return Promise.all(picturePromises);
+      };
+      const createPicture = (picture) => {
+        return database('pictures').insert(picture);
+      };
+      createPothole(pothole)
+      console.log("ID we should get back", testId)
     // const id = await database('potholes').insert({latitude, longitude, description}, 'id');
     // const picturePromises = pothole.pictures.map(picture => {
     //   knex('pictures').insert({url: picture, pothole_id: id})
     // });
     // Promise.all(picturePromises)
-    createPothole(pothole)
-    return response.status(201).json({ id })
+    // createPothole(pothole)
+    // let id = returnId(pothole)
+    return response.status(201).json( testId )
   } catch (error) {
     response.status(500).json({error: `Ya done goofed ${error}`});
   }
