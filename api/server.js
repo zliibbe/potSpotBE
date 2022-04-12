@@ -47,12 +47,14 @@ app.get('/api/v1/potholes/:id', async (request, response) => {
     let picturePromise = await database('pictures').where('pothole_id', id).select('url');
     pothole.pictures = picturePromise.map(picture => picture.url);
 
-    response.json(pothole);
+    response.status(200).json(pothole);
 
   } catch (error) {
-    response.json({error })
+    response.status(500).json({error })
   }
 })
+
+
 
 app.post('/api/v1/potholes', async (request, response) => {
 
