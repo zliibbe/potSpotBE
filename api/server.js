@@ -26,7 +26,7 @@ app.get('/api/v1/potholes', async (request, response) => {
 
 app.get('/api/v1/pictures', async (request, response) => {
   try {
-    const pictures = await database('pictures').select('url');
+    const pictures = await database('pictures').select('url', 'pothole_id');
     response.status(200).json(pictures);
   } catch (error) {
     response.status(500).json({
@@ -34,6 +34,25 @@ app.get('/api/v1/pictures', async (request, response) => {
     });
   }
 });
+
+app.get('/api/v1/potholes/:id', async (request, response) => {
+  const { id } = request.params;
+
+  try {
+    const potholePromise = await database('potholes').where('id', id).select(['id', 'latitude', 'longitude', 'description']);
+    let pothole = potholePromise[0];
+
+    if (!pothole) response.status(404).send({error: `There is no pothole with that id`});
+
+    let picturePromise = await database('pictures').where('pothole_id', id).select('url');
+    pothole.pictures = picturePromise.map(picture => picture.url);
+
+    response.json(pothole);
+
+  } catch (error) {
+    response.json({error })
+  }
+})
 
 app.post('/api/v1/potholes', async (request, response) => {
 
@@ -84,8 +103,10 @@ app.post('/api/v1/potholes', async (request, response) => {
 
   try {
     let idPromise = await createPothole(pothole)
-    console.log(idPromise[0].id)
-    return response.status(201).json({id: idPromise[0].id, message:`Your pothole has been added.`})
+    return response.status(201).json({
+      id: idPromise[0].id,
+      message: `Your pothole has been added.`
+    })
   } catch (error) {
     response.status(500).json({
       error: `Your pothole was not added see Error: ${error}`
