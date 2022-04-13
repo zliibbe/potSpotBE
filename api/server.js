@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
+app.use(cors({
+  allowedOrigins: ['localhost:3000']
+}));
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile')[environment];
@@ -118,3 +121,5 @@ app.post('/api/v1/potholes', async (request, response) => {
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}.`);
 });
+
+
