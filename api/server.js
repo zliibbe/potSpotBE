@@ -37,7 +37,6 @@ app.get('/api/v1/pictures', async (request, response) => {
 
 app.get('/api/v1/potholes/:id', async (request, response) => {
   const { id } = request.params;
-  console.log(parseInt(id))
   try {
     if(typeof parseInt(id) !== 'number' ||  !parseInt(id)) return response.status(400).send({error: `Expected id to be a number`})
     const potholePromise = await database('potholes').where('id', id).select(['id', 'latitude', 'longitude', 'description']);
