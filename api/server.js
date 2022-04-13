@@ -1,9 +1,16 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors({
   allowedOrigins: ['localhost:3000']
 }));
+
+
+// app.use(cors({
+//     origin: 'https://www.section.io'
+// }));
+
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile')[environment];
