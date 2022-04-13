@@ -37,29 +37,20 @@ app.get('/api/v1/pictures', async (request, response) => {
 
 app.get('/api/v1/potholes/:id', async (request, response) => {
   const { id } = request.params;
-
   try {
+    if(typeof parseInt(id) !== 'number' ||  !parseInt(id)) return response.status(400).send({error: `Expected id to be a number`})
     const potholePromise = await database('potholes').where('id', id).select(['id', 'latitude', 'longitude', 'description']);
     let pothole = potholePromise[0];
-
-    if (!pothole) return response.status(404).send({ error: `There is no pothole with that id` });
-
+    if (!pothole) return response.status(404).send({error: `There is no pothole with that id`})
     let picturePromise = await database('pictures').where('pothole_id', id).select('url');
-    
-    if (!picturePromise[0]) {
-      pothole.pictures = 'No pictures submitted for this pothole'
-
-    } else if (picturePromise[0]) {
-      pothole.pictures = picturePromise.map(picture => picture.url);
-    }
-
-
+    pothole.pictures = picturePromise.map(picture => picture.url)
     return response.status(200).json(pothole);
 
   } catch (error) {
-    return response.status(500).json({ error })
+      return response.status(500).json({error })
   }
 })
+
 
 
 
