@@ -37,29 +37,38 @@ app.get('/api/v1/pictures', async (request, response) => {
 
 app.get('/api/v1/potholes/:id', async (request, response) => {
   const { id } = request.params;
+  console.log(typeof id)
 
   try {
+
     const potholePromise = await database('potholes').where('id', id).select(['id', 'latitude', 'longitude', 'description']);
     let pothole = potholePromise[0];
 
-    if (!pothole) response.status(404).send({ error: `There is no pothole with that id` });
+    if (!pothole) {
+      console.log('IM WORKING')
+      response.status(404)
+      throw new Error('404')
+    };
 
     let picturePromise = await database('pictures').where('pothole_id', id).select('url');
-    
-    if (!picturePromise[0]) {
-      pothole.pictures = 'No pictures submitted for this pothole'
-
-    } else if (picturePromise[0]) {
-      pothole.pictures = picturePromise.map(picture => picture.url);
-    }
-
+    console.log(picturePromise, '<<<>>>>>Picture Promise ')
+    pothole.pictures = picturePromise.map(picture => picture.url);
 
     response.status(200).json(pothole);
 
   } catch (error) {
-    response.status(500).json({ error })
+
+    console.log(error.message, 'ERRRRRRRR')
+    if(error.message === '404') {
+      console.log('AM I WORKING?')
+      response.status(404).send({error: `There is no pothole with that id`})
+    } else {
+      console.log('500')
+      response.status(500).json({error })
+    }
   }
 })
+
 
 
 
