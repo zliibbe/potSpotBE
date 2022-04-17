@@ -125,8 +125,30 @@ app.post('/api/v1/potholes', async (request, response) => {
 });
 
 
+app.delete('/api/v1/potholes/:id', async (request, response) => {
+  const { id } = request.params;
+
+  potholeId = parseInt(id)
+
+  try {
+    if(typeof potholeId !== 'number' || !potholeId ) return response.status(400).send({error: `Expected id to be a number instead got ${id}`})
+
+      let picturePromise = await database('pictures').where('pothole_id', potholeId).del();
+      let potholePromise = await database('potholes').where('id', potholeId).del();
+
+    return response.status(200).json({
+      id: id,
+      message: `Your pothole at id: ${potholeId} has been deleted`
+    })
+  } catch {
+     return response.status(500).json({
+      error: `Your pothole was not deleted, try again`
+    })
+  }
+
+})
+
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}.`);
 });
-
-
