@@ -5,6 +5,18 @@
  */
 module.exports = {
 
+
+  test: {
+    client: 'pg',
+    connection: 'postgres://localhost/potspot-test',
+    migrations: {
+      directory: './database/migrations'
+    },
+    seeds: {
+      directory: './database/seeds/dev'
+    }
+  },
+
   development: {
     client: 'pg',
     connection: 'postgres://localhost/potspot',
@@ -34,7 +46,7 @@ module.exports = {
   }
 
 
-  
+
 //   staging: {
 //     client: 'postgresql',
 //     connection: {
