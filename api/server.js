@@ -6,15 +6,11 @@ app.use(cors({
   allowedOrigins: ['localhost:3000']
 }));
 
-
-// app.use(cors({
-//     origin: 'https://www.section.io'
-// }));
-
-
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../knexfile')[environment];
 const database = require('knex')(configuration);
+
+
 
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Pot Spot';
@@ -46,18 +42,26 @@ app.get('/api/v1/pictures', async (request, response) => {
 });
 
 app.get('/api/v1/potholes/:id', async (request, response) => {
-  const { id } = request.params;
+  const {
+    id
+  } = request.params;
   try {
-    if(typeof parseInt(id) !== 'number' ||  !parseInt(id)) return response.status(400).send({error: `Expected id to be a number`})
+    if (typeof parseInt(id) !== 'number' || !parseInt(id)) return response.status(400).send({
+      error: `Expected id to be a number`
+    })
     const potholePromise = await database('potholes').where('id', id).select(['id', 'latitude', 'longitude', 'description']);
     let pothole = potholePromise[0];
-    if (!pothole) return response.status(404).send({error: `There is no pothole with that id`})
+    if (!pothole) return response.status(404).send({
+      error: `There is no pothole with that id`
+    })
     let picturePromise = await database('pictures').where('pothole_id', id).select('url');
     pothole.pictures = picturePromise.map(picture => picture.url)
     return response.status(200).json(pothole);
 
   } catch (error) {
-      return response.status(500).json({error })
+    return response.status(500).json({
+      error
+    })
   }
 })
 
@@ -126,22 +130,26 @@ app.post('/api/v1/potholes', async (request, response) => {
 
 
 app.delete('/api/v1/potholes/:id', async (request, response) => {
-  const { id } = request.params;
+  const {
+    id
+  } = request.params;
 
   potholeId = parseInt(id)
 
   try {
-    if(typeof potholeId !== 'number' || !potholeId ) return response.status(400).send({error: `Expected id to be a number instead got ${id}`})
+    if (typeof potholeId !== 'number' || !potholeId) return response.status(400).send({
+      error: `Expected id to be a number instead got ${id}`
+    })
 
-      let picturePromise = await database('pictures').where('pothole_id', potholeId).del();
-      let potholePromise = await database('potholes').where('id', potholeId).del();
+    let picturePromise = await database('pictures').where('pothole_id', potholeId).del();
+    let potholePromise = await database('potholes').where('id', potholeId).del();
 
     return response.status(200).json({
       id: id,
       message: `Your pothole at id: ${potholeId} has been deleted`
     })
   } catch {
-     return response.status(500).json({
+    return response.status(500).json({
       error: `Your pothole was not deleted, try again`
     })
   }
@@ -152,3 +160,5 @@ app.delete('/api/v1/potholes/:id', async (request, response) => {
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}.`);
 });
+
+module.exports = {app, database};
