@@ -68,7 +68,7 @@ describe('Pot Spot API routes!', () => {
   })
 
 
-  it('should return pothole and pictures @ /ai/v1/potholes/:id', () => {
+  it('should return pothole and pictures @ /api/v1/potholes/:id', () => {
     chai.request(app)
     .get('/api/v1/potholes/1')
     .end((req, res) => {
@@ -88,7 +88,7 @@ describe('Pot Spot API routes!', () => {
     })
   })
 
-  it('should return a different pothole and pictures @ /ai/v1/potholes/:id', () => {
+  it('should return a different pothole and pictures @ /api/v1/potholes/:id', () => {
     chai.request(app)
     .get('/api/v1/potholes/2')
     .end((req, res) => {
@@ -107,4 +107,16 @@ describe('Pot Spot API routes!', () => {
       expect(res.body.pictures.length).to.be.eql(1);
     })
   })
+
+  it('should return an error if id is not a number @ /api/v1/potholes/:id', () => {
+    chai.request(app)
+    .get('/api/v1/potholes/apples')
+    .end((req, res) => {
+      console.log(res.status , '<<<<>>>>>>request')
+      console.log(res.body)
+      expect(res.status).to.be.eql(400)
+      expect(res.body).to.be.eql({error: `Expected id to be a number`});
+    })
+  })
+
 })
