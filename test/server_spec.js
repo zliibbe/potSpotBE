@@ -112,11 +112,17 @@ describe('Pot Spot API routes!', () => {
     chai.request(app)
     .get('/api/v1/potholes/apples')
     .end((req, res) => {
-      console.log(res.status , '<<<<>>>>>>request')
-      console.log(res.body)
       expect(res.status).to.be.eql(400)
       expect(res.body).to.be.eql({error: `Expected id to be a number`});
     })
   })
 
+  it('should return an error if there is no pothole with that id @ /api/v1/potholes/:id', () => {
+    chai.request(app)
+      .get('/api/v1/potholes/13')
+      .end((req, res) => {
+        expect(res.status).to.be.eql(404)
+        expect(res.body).to.be.eql({error: 'There is no pothole with that id'})
+      })
+  })
 })
