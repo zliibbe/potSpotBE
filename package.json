@@ -268,12 +268,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Romeslayer/potSpotBE.git"
+    "url": "git+https://github.com/zliibbe/potSpotBE.git"
   },
   "author": "DéNaje Ferguson, Zach Liibbe, Ron H, Jake Dunafon",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Romeslayer/potSpotBE/issues"
+    "url": "https://github.com/zliibbe/potSpotBE/issues"
   },
-  "homepage": "https://github.com/Romeslayer/potSpotBE#readme"
+  "homepage": "https://github.com/zliibbe/potSpotBE#readme"
 }
